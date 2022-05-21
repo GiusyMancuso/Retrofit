@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,7 @@ interface GitHubService {
     @GET("{user}")
     suspend fun listRepos(@Path("user") user: String?): RepoResult
 }
+
 class RepoResult : ArrayList<Repo>()
 
 data class Repo(
@@ -108,33 +110,32 @@ data class TempX(
 )
 
 class MainActivity : AppCompatActivity() {
-
-    val retrofit = Retrofit.Builder().baseUrl("https://api.punkapi.com/v2/").addConverterFactory(
-        GsonConverterFactory.create()).build()
-    val gitHubService = retrofit.create(GitHubService::class.java)
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        retrieveRepos()
+        observeRepos()
+        viewModel.retrieveRepos("beers")
     }
 
-    fun retrieveRepos(){
-        lifecycleScope.launch{
-            try{
-                val repos = gitHubService.listRepos("beers")
-                showRepos(repos)
-            } catch (e: Exception){
-                Log.e("MainActivity", "Error retrieving repos: $e")
-                Snackbar.make(findViewById(R.id.main_view), "Error retrieving repos",
-                    Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Retry"){ retrieveRepos() }.show()
-            }
+    fun observeRepos() {
+        viewModel.repos.observe(this) {
+            showRepos(it)
+        }
+
+        viewModel.error.observe(this) {
+            Snackbar.make(
+                findViewById(R.id.main_view), "Error retrieving repos: $it",
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction("Retry") { viewModel.retrieveRepos("beers") }.show()
         }
     }
 
-    fun showRepos(repoResults: List<Repo>){
+    fun showRepos(repoResults: RepoResult) {
         Log.d("MainActivity", "list of repos received, size: ${repoResults.size}")
         val list = findViewById<RecyclerView>(R.id.repo_list)
         list.visibility = View.VISIBLE
