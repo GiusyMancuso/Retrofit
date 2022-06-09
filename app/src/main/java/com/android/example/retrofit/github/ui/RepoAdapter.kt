@@ -1,10 +1,12 @@
-package com.android.example.retrofit
+package com.android.example.retrofit.github.ui
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.android.example.retrofit.R
+import com.android.example.retrofit.github.usecase.model.GithubRepository
 
 class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val repoName: TextView
@@ -14,7 +16,8 @@ class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 }
 
-class RepoAdapter(val repoResults: List<Repo>) : RecyclerView.Adapter<RepoViewHolder>() {
+class RepoAdapter(private val repoResults: List<GithubRepository>) :
+    RecyclerView.Adapter<RepoViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder {
         val repoView =
             LayoutInflater.from(parent.context).inflate(R.layout.repolistitem, parent, false)

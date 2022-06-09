@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name=".Retrofit"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,10 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Retrofit">
         <activity
-            android:name=".RepoAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".github.ui.GithubSearchScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
