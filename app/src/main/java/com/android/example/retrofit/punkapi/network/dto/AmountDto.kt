@@ -1,4 +1,4 @@
-package com.android.example.retrofit.github.network.dto
+package com.android.example.retrofit.punkapi.network.dto
 
 data class AmountDto(
     val unit: String,

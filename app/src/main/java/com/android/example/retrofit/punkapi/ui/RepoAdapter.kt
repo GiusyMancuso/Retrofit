@@ -1,4 +1,4 @@
-package com.android.example.retrofit.github.ui
+package com.android.example.retrofit.punkapi.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.android.example.retrofit.R
-import com.android.example.retrofit.github.usecase.model.GithubRepository
+import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepository
 
 class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val repoName: TextView
@@ -16,7 +16,7 @@ class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 }
 
-class RepoAdapter(private val repoResults: List<GithubRepository>) :
+class RepoAdapter(private val repoResults: List<PunkapiRepository>) :
     RecyclerView.Adapter<RepoViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder {
         val repoView =
