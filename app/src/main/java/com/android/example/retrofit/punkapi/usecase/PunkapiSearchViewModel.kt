@@ -1,13 +1,11 @@
 package com.android.example.retrofit.punkapi.usecase
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.example.retrofit.punkapi.network.PunkapiProvider
 import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 sealed class PunkapiSearchEvent {
@@ -21,11 +19,9 @@ sealed class PunkapiSearchViewModelEvent {
 }
 const val KEY_FIRST_TIME_USER= "first_time_user"
 
-class PunkapiSearchViewModel(private val punkapiProvider: PunkapiProvider, private val preferences: SharedPreferences) : ViewModel() {
+class PunkapiSearchViewModel(private val punkapiProvider: PunkapiProvider, preferences: SharedPreferences) : ViewModel() {
 
-    private var _result = MutableLiveData<PunkapiSearchViewModelEvent>()
-    val result: LiveData<PunkapiSearchViewModelEvent>
-        get() = _result
+    val result = MutableSharedFlow<PunkapiSearchViewModelEvent>()
 
     init {
         checkFirstTimeUser(preferences)
@@ -36,7 +32,11 @@ class PunkapiSearchViewModel(private val punkapiProvider: PunkapiProvider, priva
 
         if (firstTimeUser){
             preferences.edit().putBoolean(KEY_FIRST_TIME_USER, false).apply()
-            _result.value=PunkapiSearchViewModelEvent.FirstTimeUser
+
+            viewModelScope.launch {
+                result.emit(PunkapiSearchViewModelEvent.FirstTimeUser)
+            }
+
         }
     }
 
@@ -47,12 +47,12 @@ class PunkapiSearchViewModel(private val punkapiProvider: PunkapiProvider, priva
     }
 
     private fun retrieveRepos(drink: String) {
-        CoroutineScope(Dispatchers.Main).launch {
+        viewModelScope.launch {
             try {
-                _result.value = PunkapiSearchViewModelEvent.PunkapiSearchResult(punkapiProvider.getDrinkRepos(drink))
+                result.emit(PunkapiSearchViewModelEvent.PunkapiSearchResult(punkapiProvider.getDrinkRepos(drink)))
             } catch (e: Exception) {
-                _result.value =
-                    PunkapiSearchViewModelEvent.PunkapiSearchError("error retrieving repos: ${e.localizedMessage}")
+                result.emit(
+                    PunkapiSearchViewModelEvent.PunkapiSearchError("error retrieving repos: ${e.localizedMessage}"))
             }
         }
 

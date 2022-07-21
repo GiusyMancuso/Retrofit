@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.example.retrofit.R
@@ -14,6 +15,7 @@ import com.android.example.retrofit.punkapi.usecase.PunkapiSearchViewModel
 import com.android.example.retrofit.punkapi.usecase.PunkapiSearchViewModelEvent
 import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepository
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 class PunkapiSearchScreen : AppCompatActivity() {
     private lateinit var viewModel: PunkapiSearchViewModel
@@ -30,29 +32,36 @@ class PunkapiSearchScreen : AppCompatActivity() {
     }
 
     private fun observeRepos() {
+        lifecycleScope.launch {
+            viewModel.result.collect {
+                when (it) {
+                    is PunkapiSearchViewModelEvent.PunkapiSearchResult -> {
+                        showRepos(it.repos)
+                    }
 
-        viewModel.result.observe(this) {
-            when (it) {
-                is PunkapiSearchViewModelEvent.PunkapiSearchResult -> {
-                    showRepos(it.repos)
-                }
-
-                is PunkapiSearchViewModelEvent.PunkapiSearchError -> {
-                    Snackbar.make(
-                        findViewById(R.id.main_view), "PunkapiSearchError retrieving repos: $it",
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                        .setAction("Retry") {
-                            viewModel.send(
-                                PunkapiSearchEvent.RetrieveUserRepos(
-                                    "beers"
+                    is PunkapiSearchViewModelEvent.PunkapiSearchError -> {
+                        Snackbar.make(
+                            findViewById(R.id.main_view),
+                            "PunkapiSearchError retrieving repos: $it",
+                            Snackbar.LENGTH_INDEFINITE
+                        )
+                            .setAction("Retry") {
+                                viewModel.send(
+                                    PunkapiSearchEvent.RetrieveUserRepos(
+                                        "beers"
+                                    )
                                 )
-                            )
-                        }.show()
+                            }.show()
+                    }
+                    is PunkapiSearchViewModelEvent.FirstTimeUser -> Toast.makeText(
+                        this@PunkapiSearchScreen,
+                        "Welcome!Chose your beer!",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-                is PunkapiSearchViewModelEvent.FirstTimeUser-> Toast.makeText(this, "Welcome!Chose your beer!", Toast.LENGTH_LONG).show()
             }
         }
+
     }
 
     private fun showRepos(repoResults: List<PunkapiRepository>) {
