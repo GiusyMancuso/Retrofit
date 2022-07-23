@@ -12,8 +12,8 @@ import com.android.example.retrofit.R
 import com.android.example.retrofit.Retrofit
 import com.android.example.retrofit.punkapi.usecase.PunkapiSearchEvent
 import com.android.example.retrofit.punkapi.usecase.PunkapiSearchViewModel
-import com.android.example.retrofit.punkapi.usecase.PunkapiSearchViewModelEvent
-import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepository
+import com.android.example.retrofit.punkapi.usecase.PunkapiSearchViewModelState
+import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepo
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
@@ -35,11 +35,11 @@ class PunkapiSearchScreen : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.result.collect {
                 when (it) {
-                    is PunkapiSearchViewModelEvent.PunkapiSearchResult -> {
+                    is PunkapiSearchViewModelState.PunkapiSearchResult -> {
                         showRepos(it.repos)
                     }
 
-                    is PunkapiSearchViewModelEvent.PunkapiSearchError -> {
+                    is PunkapiSearchViewModelState.PunkapiSearchError -> {
                         Snackbar.make(
                             findViewById(R.id.main_view),
                             "PunkapiSearchError retrieving repos: $it",
@@ -53,7 +53,7 @@ class PunkapiSearchScreen : AppCompatActivity() {
                                 )
                             }.show()
                     }
-                    is PunkapiSearchViewModelEvent.FirstTimeUser -> Toast.makeText(
+                    is PunkapiSearchViewModelState.FirstTimeUser -> Toast.makeText(
                         this@PunkapiSearchScreen,
                         "Welcome!Chose your beer!",
                         Toast.LENGTH_LONG
@@ -64,7 +64,7 @@ class PunkapiSearchScreen : AppCompatActivity() {
 
     }
 
-    private fun showRepos(repoResults: List<PunkapiRepository>) {
+    private fun showRepos(repoResults: List<PunkapiRepo>) {
         Log.d("PunkapiSearchScreen", "list of repos received, size: ${repoResults.size}")
         val list = findViewById<RecyclerView>(R.id.repo_list)
         list.visibility = View.VISIBLE

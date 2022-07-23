@@ -1,3 +1,3 @@
 package com.android.example.retrofit.punkapi.usecase.model
 
-data class PunkapiRepository(val name: String)
+data class PunkapiRepo(val id: Int, val name: String)

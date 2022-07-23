@@ -1,7 +1,7 @@
 package com.android.example.retrofit.punkapi.network
 
 import com.android.example.retrofit.punkapi.network.dto.toPunkapiRepository
-import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepository
+import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepo
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -14,6 +14,6 @@ class PunkapiProvider {
         ).build()
     private val punkapiService = retrofit.create(PunkapiService::class.java)
 
-    suspend fun getDrinkRepos(drink: String): List<PunkapiRepository> =
+    suspend fun getDrinkRepos(drink: String): List<PunkapiRepo> =
         punkapiService.listRepos(drink, PAGE_SIZE).map { it.toPunkapiRepository() }
 }
