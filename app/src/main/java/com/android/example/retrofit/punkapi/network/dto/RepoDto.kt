@@ -1,6 +1,6 @@
 package com.android.example.retrofit.punkapi.network.dto
 
-import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepository
+import com.android.example.retrofit.punkapi.usecase.model.PunkapiRepo
 
 data class RepoDto(
     val abv: Double,
@@ -26,4 +26,4 @@ data class RepoDto(
     val volume: VolumeDto
 )
 
-fun RepoDto.toPunkapiRepository() = PunkapiRepository(this.name)
+fun RepoDto.toPunkapiRepository() = PunkapiRepo(name= this.name, id= this.id)
